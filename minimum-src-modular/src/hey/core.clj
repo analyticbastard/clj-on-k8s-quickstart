@@ -1,6 +1,6 @@
 (ns hey.core
   (:gen-class)
-  (:require [ring.adapter.jetty :as jetty]))
+  (:require [org.httpkit.server :as s]))
 
 (defn handler [my-name request]
   {:status 200
@@ -9,5 +9,7 @@
 
 (defn -main [& args]
   (let [my-name (or (System/getenv "MY_NAME") 
-                    "World")]
-    (jetty/run-jetty (partial handler my-name) {:port 3000})))
+                    "World")
+        port (or (try (Long/parseLong (System/getenv "PORT")) (catch Exception _))
+                 3000)]
+    (s/run-server (partial handler my-name) {:port port})))
