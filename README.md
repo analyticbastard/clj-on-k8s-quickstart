@@ -1,12 +1,55 @@
 # clj-on-k8s-quickstart
 
-**Note:** I've been meaning to add exposition to this, but haven't had the
-time lately.  Rather than let it languish on my hard drive, I'm
-pushing it out in its current form.  Everything should work, start to
-finish, I just don't explain all that I'd like.  That said, it does
-show one path through all the issues I found in putting it together.
+Minimal HttpKit web server compiled into a 10 MB dockerized native binary.
+
+## Relevance
+
+As somebody who used to be a hardcore systems guy but fell into the comfort
+and nicety of the JVM and later on the joy of Clojure, I have always been
+interested in a systems-oriented Clojure version (call it LLVM-Clojure,
+Clojure to C, whatever), which in itself is somewhat contradictory since
+the garbage collection and memory allocation that the JVM (very efficiently)
+does for us must be reimplemented. Expectedly, maybe because of the previous
+reason, no such Clojure systems implementation exists yet.
+
+[Graal](https://github.com/oracle/graal) has made a way possible. And probably,
+the best possible way.
+
+No wonder Clojure communities are excited over this. Graal, with its `native-image`
+tool compiles bytecode to native machine versions, embedding the JVM and your code
+into a single binary native file that can be handled directly by the OS.
+
+The next question is the need to reduce the size of the final executable. Enters
+Java 10 and its modules. So I started working,
+forked from [clj-on-k8s-quickstart](https://github.com/jwhitlark/clj-on-k8s-quickstart)
+and built on top of it.
+
+The product is a dockerized native webserver implemented in Clojure with
+all the abstraction it provides which stats up with no down time.
+
+## Instructions
+
+* Build your Docker image
+
+```bash
+docker image build -t clj-on-k8s/hey:0.0.2 .
+```
+
+* Assuming you have a Kubernetes set up (and the image placed in the
+correct ECR)
+
+```bash
+kubectl run hello-clj --image clj-on-k8s/hey:0.0.2 --port 3000 --env="MY_NAME=Clojure"
+```
+
+This works for Minikube. This should also work in vanilla Docker.
+
+* Connect to the web server inside the container
+
 
 ## Goals and Rational
+
+### [Original goals](https://github.com/jwhitlark/clj-on-k8s-quickstart)
 
 It's an exciting time.
 
@@ -22,22 +65,24 @@ With Kubernetes, we now have a great platform to build microservices on.
 
 Istio on K8s gives us new ways to easily visualize, monitor and trace our traffic flows between services. It also simplifies many security tasks, and gives us new abilities to control traffic.
 
-## Paths through this.
+### Extra goals
 
-1. The [Minimum](minimum-docs/01-prerequisites.md) to see a clj response publicly.
+Graal makes it possible extra-fast native Clojure programs
 
 
-## Future additions
+## Important changes
 
-1. Show two microservices interacting.
-2. Luminus example, adding a database, etc.
-3. More config maps examples
-4. Secrets
-5. Volume mounts
-6. Health & Liveliness checks
-7. [Istio](https://istio.io/about/intro.html) example, rewriting [bookinfo](https://github.com/istio/istio/blob/master/samples/bookinfo/src/details/details.rb), showing metrics and tracing.
-     
+I needed to switch from Ring/Jetty to HttpKit because of an Eclipse project
+class not found by Graal that I could not resolve. The class was indeed present
+in the produced Jar, but it lools like Graal does not support something
+related to it.
+
+I needed to get rid of several signature checks that I had no time to fix.
+
+
 ## Thanks!
 
-* To Yogthos, for his advice and all the work he has put into the Clojure community.
-* To Sunng for his work on [lein-jlink](https://github.com/sunng87/lein-jlink).
+* [The original work](https://github.com/jwhitlark/clj-on-k8s-quickstart) and trainsitively those thanked there.
+* [Graal team](https://github.com/oracle/graal)
+* The guys on the [Clojure subreddit](https://www.reddit.com/r/Clojure/)
+* ... and many more!!!

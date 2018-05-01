@@ -14,10 +14,11 @@ RUN mkdir -p $LEIN_INSTALL \
   && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc \
   && rm leiningen-$LEIN_VERSION-standalone.zip.asc \
   && mkdir -p /usr/share/java \
-  && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar \
-  && wget https://github.com/oracle/graal/releases/download/vm-1.0.0-rc1/graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz \\
-  && tar zxvf graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz \
-  && rm graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
+  && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
+
+RUN wget https://github.com/oracle/graal/releases/download/vm-1.0.0-rc1/graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
+RUN tar zxvf graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
+RUN rm graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
