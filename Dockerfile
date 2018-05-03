@@ -29,20 +29,14 @@ RUN apt-get update && \
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
 
-# Install clojure 1.9.0 so users don't have to download it every time
-RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.9.0"]])' > project.clj \
-  && lein deps && rm project.clj
-
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
 RUN lein jlink init
 RUN lein jlink assemble
-RUN lein jlink package
 
-RUN mkdir -p test src dev-resources resources target target/classes && \
-    /opt/graal/bin/native-image -H:+ReportUnsupportedElementsAtRuntime -cp `lein cp`:target/jlink/hey.jar hey.core 
+RUN /opt/graal/bin/native-image -H:+ReportUnsupportedElementsAtRuntime -cp target/jlink/hey.jar hey.core 
 
 #NOTE: If you run jlink on ubuntu, you can't use the same jre on alpine, they have incompatible libc libraries!
 
