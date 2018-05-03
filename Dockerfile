@@ -18,13 +18,14 @@ RUN mkdir -p $LEIN_INSTALL \
 
 RUN wget https://github.com/oracle/graal/releases/download/vm-1.0.0-rc1/graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
 RUN tar zxvf graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
-RUN mv graalvm-1.0.0-rc1 /opt/graal && \
-    rm graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
-
+# Leave some time for tar and coker to catch up, do something else...
 RUN apt-get update && \
     apt-get -y install \
             gcc \
             zlib1g-dev
+# ..before returning to grall processing
+RUN mv graalvm-1.0.0-rc1 /opt/graal && \
+    rm graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
