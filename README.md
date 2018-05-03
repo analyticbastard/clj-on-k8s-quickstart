@@ -39,13 +39,15 @@ docker image build -t clj-on-k8s/hey:0.0.2 .
 correct ECR)
 
 ```bash
-kubectl run hello-clj --image clj-on-k8s/hey:0.0.2 --port 3000 --env="MY_NAME=Clojure"
+kubectl run hello-clj --image clj-on-k8s/hey:0.0.2 --port 3000 --env="MY_NAME=Clojure" --labels name=hello-clj
 ```
 
 This works for Minikube. This should also work in vanilla Docker.
 
 * Connect to the web server inside the container
-
+```bash
+kubectl port-forward $(kubectl get pods --no-headers -o name --selector "name=hello-clj") 3000:3000
+```
 
 ## Goals and Rational
 
@@ -74,10 +76,10 @@ Graal makes it possible extra-fast native Clojure programs
 
 I needed to switch from Ring/Jetty to HttpKit because of an Eclipse project
 class not found by Graal that I could not resolve. The class was indeed present
-in the produced Jar, but it lools like Graal does not support something
-related to it.
+in the produced Jar, but it looks like a more general problem with Graal. The
+Eclipse ecosystem is apparently affected by this.
 
-I needed to get rid of several signature checks that I had no time to fix.
+Also I needed to get rid of several cryptographic signature checks that I had no time to fix.
 
 
 ## Thanks!
