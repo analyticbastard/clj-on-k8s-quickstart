@@ -17,8 +17,8 @@ RUN mkdir -p $LEIN_INSTALL \
   && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
 
 RUN wget https://github.com/oracle/graal/releases/download/vm-1.0.0-rc1/graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz && \
-    tar zxvf graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz && \
-    mv graalvm-1.0.0-rc1 /opt/graal && \
+RUN tar zxvf graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
+RUN mv graalvm-1.0.0-rc1 /opt/graal && \
     rm graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
 
 RUN apt-get update && \
